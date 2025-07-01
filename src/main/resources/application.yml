@@ -1,0 +1,21 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoint:
+    prometheus:
+      enabled: true
+server:
+  port: 9999
+
+spring:
+  application:
+    name: spring-boot-observability
+logging:
+  level:
+    root: info

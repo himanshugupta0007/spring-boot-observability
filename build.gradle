@@ -1,0 +1,78 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.2.1'
+	id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.observability'
+version = '1.0.0'
+description = 'Spring Boot application with comprehensive observability'
+
+java {
+	sourceCompatibility = '17'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('springCloudVersion', "2023.0.0")
+	set('micrometerTracingVersion', "1.2.1")
+	set('lokiLogbackAppenderVersion', "1.4.2")
+}
+
+dependencies {
+	// Spring Boot Starters
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	// Observability Dependencies
+	// Micrometer for Prometheus metrics
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
+	// OpenTelemetry with Micrometer
+	implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+	implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
+
+	// Zipkin for tracing (alternative to OTLP)
+	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+
+	// Loki for log aggregation
+	implementation "com.github.loki4j:loki-logback-appender:${lokiLogbackAppenderVersion}"
+
+	// Database
+	runtimeOnly 'com.h2database:h2'
+
+	// Development and Testing
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// Annotation processors
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// Gradle wrapper configuration
+wrapper {
+	gradleVersion = '8.5'
+	distributionType = Wrapper.DistributionType.BIN
+}
